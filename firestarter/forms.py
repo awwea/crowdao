@@ -35,6 +35,7 @@ class QuestionForm(forms.ModelForm):
 	captcha = CaptchaField()
 	class Meta:
 		model = Question
+		exclude = ('created_at',)
 
 
 class AdminQuestionForm(admin.ModelAdmin):

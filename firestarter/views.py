@@ -19,7 +19,7 @@ from firestarter.models import Order, Reward, Update, Question
 from firestarter.forms import QuestionForm
 
 PAGES = []
-for x in os.listdir(os.path.join(settings.PROJECT_PATH, '/templates/pages')):
+for x in os.listdir(os.path.join(settings.PROJECT_PATH, 'templates/pages')):
 	PAGES.append((x[:-5], x[:-5].capitalize()))
 
 def intWithCommas(x):

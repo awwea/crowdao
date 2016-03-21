@@ -4,40 +4,43 @@ from django.conf import settings
 from django.contrib import admin
 
 from firestarter import paypal
-
+#from .views import home, questions, updates, choose
+import firestarter.views
+import firestarter.bitcoin
+import firestarter.cc_stripe
+import firestarter.paypal
 admin.autodiscover()
 
-urlpatterns = patterns('firestarter.views',
-    # Examples:
-    url(r'^$', 'home', name='home'),
-    url(r'^questions/$', 'questions', name='questions'),
-    url(r'^updates/$', 'updates', name='updates'),
-    url(r'^c/choose$', 'choose', name='choose'),
+urlpatterns = [
+    url(r'^$', firestarter.views.home, name='home'),
+    url(r'^questions/$', firestarter.views.questions, name='questions'),
+    url(r'^updates/$', firestarter.views.updates, name='updates'),
+    url(r'^c/choose$', firestarter.views.choose, name='choose'),
     # url(r'^firestarter/', include('firestarter.foo.urls')),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^admin/', include(admin.site.urls))
-)
+]
 
-for x in os.listdir(os.path.join(settings.PROJECT_PATH, '/templates/pages')):
-    urlpatterns += patterns('firestarter.views',
-        url(r'^p/'+x[:-5]+'$', 'page', {'pagename': x[:-5]})
-    )
+for x in os.listdir(os.path.join(settings.PROJECT_PATH, 'templates/pages')):
+    urlpatterns += [
+        url(r'^p/'+x[:-5]+'$', firestarter.views.page, {'pagename': x[:-5]})
+    ]
 
 for x in settings.PAY_TYPES:
     if 'CC' in x[0]:
-        urlpatterns += patterns('firestarter.cc_stripe',
-            url(r'^c/CC$', 'approve_payment', name='approve_payment'),
-            url(r'^c/CC/complete$', 'complete_payment', name='complete_payment'),
-        )
+        urlpatterns += [
+            url(r'^c/CC$', firestarter.cc_stripe.approve_payment, name='approve_payment'),
+            url(r'^c/CC/complete$', firestarter.cc_stripe.complete_payment, name='complete_payment'),
+        ]
     elif 'BC' in x[0]:
-        urlpatterns += patterns('firestarter.bitcoin',
-            url(r'^c/BC$', 'approve_payment', name='approve_payment'),
-            url(r'^c/BC/complete$', 'complete_payment', name='complete_payment'),
-        )
+        urlpatterns += [ 
+            url(r'^c/BC$', firestarter.bitcoin.approve_payment, name='approve_payment'),
+            url(r'^c/BC/complete$', firestarter.bitcoin.complete_payment, name='complete_payment'),
+        ]
     elif 'PP' in x[0]:
-        urlpatterns += patterns('firestarter.paypal',
-            url(r'^c/PP$', 'approve_payment', name='approve_payment'),
-            url(r'^c/PP/confirm$', 'handle_response', name='handle_response'),
-            url(r'^c/PP/complete$', 'complete_payment', name='complete_payment'),
-            url(r'^c/PP/cancel$', 'cancel', name='cancel')
-        )
+        urlpatterns += [ 
+            url(r'^c/PP$', firestarter.paypal.approve_payment, name='approve_payment'),
+            url(r'^c/PP/confirm$', firestarter.paypal.handle_response, name='handle_response'),
+            url(r'^c/PP/complete$', firestarter.paypal.complete_payment, name='complete_payment'),
+            url(r'^c/PP/cancel$', firestarter.paypal.cancel, name='cancel')
+        ]
