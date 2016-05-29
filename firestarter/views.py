@@ -4,7 +4,7 @@ import json
 import os
 
 from django.core.mail import send_mail
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,6 +13,10 @@ from django.contrib import messages
 from django.http import Http404
 from django.template import Context
 from django.template.loader import get_template
+
+
+from django.template import RequestContext
+
 
 from firestarter.currency import get_btc_rate, dollars_to_eur, dollars_to_gbp, eur_to_dollars, gbp_to_dollars
 from firestarter.models import Order, Reward, Update, Question
@@ -56,6 +60,7 @@ def get_context():
 def home(request):
 	return render(request, 'home.html', get_context())
 
+
 def questions(request):
 	c = get_context()
 	c['activepage'] = 'questions'
@@ -66,14 +71,16 @@ def questions(request):
 			f = c['form'].save(commit=False)
 			if not f.email and f.notify:
 				messages.error(request, "Please provide an email address to receive a notification.")
-				return render(request, 'comments.html', c)
+				return render(request, 'comments.html',  RequestContext(request,  c))
 			else:
 				f.save()
 		else:
 			messages.error(request, "An error occurred in validation. Please make sure all fields are complete and correct.")
 	else:
 		c['form'] = QuestionForm()
-	return render(request, 'comments.html', c)
+	
+	
+	return render( request, 'comments.html', RequestContext(request,  c))
 
 def updates(request):
 	c = get_context()
