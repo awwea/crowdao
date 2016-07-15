@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 {% load gravatar %}
-{% load markdown_deux_tags %}
+{% load django_markdown %}
 {% load widget_tweaks %}
 <h3>{{ qnum }} Question{% if qnum > 1 or qnum == 0 %}s{% endif %}</h3>
 {% for q in questions %}
