@@ -82,3 +82,8 @@ body {
 #sh-form, .rewardamt{
 	display: none;
 }
+
+.masthead {
+	font-size : 36px;
+	vertical-align : bottom;
+}
