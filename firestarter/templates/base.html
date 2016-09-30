@@ -81,6 +81,12 @@
 					<a class="btn btn-lg btn-danger" rel="tooltip" data-toggle="tooltip" title="Share to Google+" href="https://plus.google.com/share?url={{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-google-plus-sign text-center"></i></a>
 					<a class="btn btn-lg btn-default" rel="tooltip" data-toggle="tooltip" title="Share to Diaspora" href="http://sharetodiaspora.github.io/?title=Check%20this%20out!%20{{ proj_name|urlencode:'' }}&url={{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-asterisk text-center"></i></a>
 				</div>
+				<h1>Rewards</h1>
+				<p>You will receive Crow Gold when you donate to this campaign. 
+				Lorem ipsum ...
+
+				</p>
+				{% comment %}
 				<h1>{% trans "Reward Levels" %}</h1>
 				<p>{{ rewards_disclaimer }}</p>
 				<ul class="nav nav-pills nav-justified">
@@ -103,6 +109,7 @@
 					{% endif %}
 				</div>
 				{% endfor %}
+				{% endcomment %}
 			</div>
 		</div>
 	</div>

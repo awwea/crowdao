@@ -1,10 +1,9 @@
 import os
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf import settings
 from django.contrib import admin
 
 from firestarter import paypal
-#from .views import home, questions, updates, choose
 import firestarter.views
 import firestarter.bitcoin
 import firestarter.cc_stripe
@@ -23,7 +22,7 @@ urlpatterns = [
 
 for x in os.listdir(os.path.join(settings.PROJECT_PATH, 'templates/pages')):
     urlpatterns += [
-        url(r'^p/'+x[:-5]+'$', firestarter.views.page, {'pagename': x[:-5]})
+        url(r'^p/' + x[:-5] + '$', firestarter.views.page, {'pagename': x[:-5]})
     ]
 
 for x in settings.PAY_TYPES:

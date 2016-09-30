@@ -67,12 +67,14 @@ def complete_payment(request):
                 reward=(Reward.objects.get(name=request.session['fd']['reward_name']) if request.session['fd']['reward'] else None),
                 amount=decimal.Decimal(request.session['fd']['amount']),
                 ptype='CC',
-                pref=request.session['fd']['cc_type'] + ' x-'+ request.session['fd']['cc_last4'],
+                pref=request.session['fd']['cc_type'] + ' x-' + request.session['fd']['cc_last4'],
                 email=request.session['fd']['email'],
-                namecredit=request.session['fd']['namecredit'],
-                notes=request.session['fd']['notes']
+                # XXX: Not sure what this field was for, it is not in the session
+                # namecredit=request.session['fd']['namecredit'],
+                # notes=request.session['fd']['notes']
             )
         except:
+            raise
             msg = "There was a problem saving your order details to the database. Your card has NOT been charged. Please notify the site operator."
             return render(request, 'error.html', locals())
 
@@ -83,23 +85,28 @@ def complete_payment(request):
                 card=token,
                 description=desc
             )
-            try:
-                o.notify = request.session['fd']['notify']
-            except:
-                pass
+            # checkbox not checked --> the key is not sent in the request
+            o.notify = request.session['fd'].has_key('notify')
             o.save()
-            send_mail(
-                subject=proj_name+' - Thank you for your contribution',
-                message=get_template('notify.txt').render(Context({'order': request.session['fd'], 'proj_name': proj_name, 'proj_addr': proj_addr, 'time': time, 'reward_desc': reward_desc})),
-                from_email=settings.NOTIFY_SENDER, 
-                recipient_list=[request.session['fd']['email']],
-                fail_silently=False)
+            recipient_list = [request.session['fd']['email']]
+            try:
+                send_mail(
+                    subject=proj_name + ' - Thank you for your contribution',
+                    message=get_template('notify.txt').render({'order': request.session['fd'], 'proj_name': proj_name, 'proj_addr': proj_addr, 'time': time, 'reward_desc': reward_desc}),
+                    from_email=settings.NOTIFY_SENDER,
+                    recipient_list=recipient_list,
+                    fail_silently=False)
+                mail_sent = True
+            except Exception as error:
+                mail_sent = False
+                mail_error_message = unicode(error)
             request.session['fd'] = {}
             return render(request, 'payment/success.html', locals())
         except stripe.CardError, e:
             msg = "Your card has been declined. Please choose a new card or a new payment method and restart your order."
             return render(request, 'error.html', locals())
         except:
+            raise
             msg = "There was a problem saving your order. Please contact the site operator immediately to confirm your order completion."
             return render(request, 'error.html', locals())
     else:
