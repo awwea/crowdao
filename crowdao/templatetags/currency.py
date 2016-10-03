@@ -1,7 +1,7 @@
 import decimal
 
 from django.template import Library
-from firestarter import currency
+from crowdao import currency
 
 register = Library()
 

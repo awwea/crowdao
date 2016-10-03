@@ -6,7 +6,7 @@ import urllib2
 from django.conf import settings
 from django.utils import timezone
 
-from firestarter.models import Value
+from crowdao.models import Value
 
 
 def dollars_to_btc(value):

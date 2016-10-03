@@ -1,7 +1,7 @@
 from django.contrib import admin
-from firestarter.models import Order, Reward, Update, Question, Value
-from firestarter.forms import AdminOrderForm, AdminRewardForm, AdminUpdateForm
-from firestarter.forms import AdminQuestionForm, AdminValueForm
+from crowdao.models import Order, Reward, Update, Question, Value
+from crowdao.forms import AdminOrderForm, AdminRewardForm, AdminUpdateForm
+from crowdao.forms import AdminQuestionForm, AdminValueForm
 
 admin.site.register(Order, AdminOrderForm)
 admin.site.register(Reward, AdminRewardForm)

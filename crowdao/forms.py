@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from captcha.fields import CaptchaField
 
-from firestarter.models import Order, Reward, Update, Question, Value
+from crowdao.models import Order, Reward, Update, Question, Value
 
 
 class AdminOrderForm(admin.ModelAdmin):

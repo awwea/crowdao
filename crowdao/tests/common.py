@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import trans_real
 from django_webtest import WebTest
 
-from firestarter import models
+from crowdao import models
 
 
 class BaseTestCase(WebTest):

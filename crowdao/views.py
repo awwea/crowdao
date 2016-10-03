@@ -18,9 +18,9 @@ from django.template.loader import get_template
 from django.template import RequestContext
 
 
-from firestarter.currency import get_btc_rate, dollars_to_eur, dollars_to_gbp, eur_to_dollars, gbp_to_dollars
-from firestarter.models import Order, Reward, Update, Question
-from firestarter.forms import QuestionForm
+from crowdao.currency import get_btc_rate, dollars_to_eur, dollars_to_gbp, eur_to_dollars, gbp_to_dollars
+from crowdao.models import Order, Reward, Update, Question
+from crowdao.forms import QuestionForm
 
 PAGES = []
 for x in os.listdir(os.path.join(settings.PROJECT_PATH, 'templates/pages')):

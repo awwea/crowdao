@@ -9,8 +9,8 @@ from django.shortcuts import render
 from django.template import Context
 from django.template.loader import get_template
 
-from firestarter.models import Reward, Order
-from firestarter.currency import dollars_to_eur, dollars_to_gbp, eur_to_dollars, gbp_to_dollars
+from crowdao.models import Reward, Order
+from crowdao.currency import dollars_to_eur, dollars_to_gbp, eur_to_dollars, gbp_to_dollars
 
 
 def approve_payment(request):

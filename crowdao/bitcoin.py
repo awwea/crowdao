@@ -7,8 +7,8 @@ from django.shortcuts import render
 from django.template import Context
 from django.template.loader import get_template
 
-from firestarter.currency import get_btc_rate
-from firestarter.models import Order, Reward
+from crowdao.currency import get_btc_rate
+from crowdao.models import Order, Reward
 
 def approve_payment(request):
     proj_name = settings.PROJECT_NAME

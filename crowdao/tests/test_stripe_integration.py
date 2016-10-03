@@ -22,7 +22,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         if settings.DEBUG == False:
             settings.DEBUG = True
 
-
     def test_cc_payment(self):
         # we test the payment form with a stripe mockup
         sel = self.selenium
