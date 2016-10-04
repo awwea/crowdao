@@ -1,84 +1,80 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver
 from django.core.urlresolvers import reverse
-from django.conf import settings
+from common import BaseTestCase
+from ..models.order import Order, ORDER_STATUS_FINAL, ORDER_STATUS_REIMBURSED, \
+    ORDER_STATUS_TRANSFERRED
+from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign
 
 
-class MySeleniumTests(StaticLiveServerTestCase):
-    # fixtures = ['user-data.json']
+class StripeIntegrationTests(BaseTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        super(MySeleniumTests, cls).setUpClass()
-        cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(10)
+    def test_beacon_campaign_lifecycle(self):
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.selenium.quit()
-        super(MySeleniumTests, cls).tearDownClass()
+        # create a Beacon Campaign
+        bc = Campaign(
+            name='Test Campaign',
+            goal=100,
+            ctype='BEACON',
+            )
 
-    def setUp(self):
-        if settings.DEBUG == False:
-            settings.DEBUG = True
+        bc.save()
+        # collect a donation 1
+        order1 = Order(
+            amount=10,
+            notify=False,
+            campaign=bc,
+            )
 
-    def test_cc_payment(self):
-        # we test the payment form with a stripe mockup
-        sel = self.selenium
-        # first step in payment process: choose which payment method
-        # url = reverse('approve_payment')
-        url = '/c/CC'
-        self.selenium.get(self.live_server_url + url)
-        # the error 
-        validation_message = self.selenium.find_element_by_id('validate')
-        self.assertFalse(validation_message.is_displayed())
+        order1.save()
+        # 
 
-        # submit the form
-        self.selenium.find_element_by_id('submitbutton').click()
-
-        validation_message = self.selenium.find_element_by_id('validate')
-        self.assertTrue(validation_message.is_displayed())
-        self.assertIn('error', validation_message.text)
-
-        # now fill in the form as best as we can
-        # send 10 dollars
-        sel.find_element_by_id('amount').send_keys('10')
-        # select reward level 
-        sel.find_element_by_id('rsel0').click()
-
-        # add credit card info
-        for (input_id, value) in [
-            ('cc-name', 'Test Name'),
-            ('email', 'some@email.com'),
-            ('cc-number', '4242424242424242'),
-            ('cc-exp', '12/17'),
-            ('cc-cvc', '123'),
-        ]:
-            sel.find_element_by_id(input_id).send_keys(value)
+        self.assertEqual(bc.orders.count(), 1)
+        self.assertEqual(bc.total_pledged(), 10)
 
 
-        # submit the form
-        sel.find_element_by_id('submitbutton').click()
+        # collect a recurrent donation 2
+        # collect a donation 1
+        order2 = Order(
+            amount=20,
+            notify=False,
+            campaign=bc,
+            recurrent=True,
+            )
 
-        # TODO: we wait 10 seconds for an answer from stripe
-        # would be better to do some conditional thing..
-        from time import sleep
-        sleep(5)
+        order2.save()
 
-        # se should now be on the confirmation screen
-        self.assertIn('Confirm', sel.page_source)
+        self.assertEqual(bc.orders.count(), 2)
+        self.assertEqual(bc.total_pledged(), 30)
 
-        # we confirm 
-        sel.find_element_by_id('submitbutton').click()
+        # the first period of the campaign ends, but the goal is not reached
+        self.assertEqual(bc.goal_reached(), False)
+        bc.close_campaign()
 
-        # the payment is made
-        self.assertIn('Thank you', sel.page_source)
-        sel.find_element_by_id('backbutton').click()
+        self.assertEqual(bc.status, CAMPAIGN_STATUS_FAILED)
+        next_campaign = bc.next_campaign
 
-        # and now we should be back on the home page
-        print sel.current_url
+        # donation 1 and 2 are now cancelled
+        order1.refresh_from_db()
+        order2.refresh_from_db()
+        self.assertEqual(order1.status, ORDER_STATUS_REIMBURSED)
+        self.assertEqual(order2.status, ORDER_STATUS_TRANSFERRED)
 
-        print 'OK, we now wait some secs for your convenience :-)'
-        from time import sleep
-        sleep(10)
-        # print response
+        # but the payment of order2 is now transferred to the new campaign
+        self.assertEqual(next_campaign.orders.count(), 1)
+        self.assertEqual(next_campaign.total_pledged(), 20)
+
+        # add another donation, to reach the goal
+        order4 = Order(
+            amount=100,
+            notify=False,
+            campaign=next_campaign,
+            recurrent=True,
+            )
+
+        order4.save()
+
+        # now the goal is reached 
+        self.assertEqual(next_campaign.goal_reached(), True)
+        next_campaign.close_campaign()
+
+        # and the end period, the campaign funds are collected
+        # assert False, 'xxx'
