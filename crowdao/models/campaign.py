@@ -37,7 +37,8 @@ class Campaign(models.Model):
 
     def close_campaign(self):
         if self.goal_reached():
-            pass
+            for order in self.orders.all():
+                order.finalize()
         else:
             # if this is a  beacon campaign, we create a new followup campaign
             assert self.next_campaign == None

@@ -1,3 +1,6 @@
+import stripe
+
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from common import BaseTestCase
 from ..models.order import Order, ORDER_STATUS_FINAL, ORDER_STATUS_REIMBURSED, \
@@ -7,74 +10,30 @@ from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign
 
 class StripeIntegrationTests(BaseTestCase):
 
-    def test_beacon_campaign_lifecycle(self):
-
-        # create a Beacon Campaign
-        bc = Campaign(
-            name='Test Campaign',
-            goal=100,
-            ctype='BEACON',
-            )
-
-        bc.save()
-        # collect a donation 1
-        order1 = Order(
-            amount=10,
-            notify=False,
-            campaign=bc,
-            )
-
-        order1.save()
+    def test_refund(self):
         # 
+        # create a creditcard token for testing purposes
+        #
+        stripe.api_key = settings.STRIPE_TEST_PRIVATE_KEY
+        token = stripe.Token.create(
+            card={
+                "number": '4242424242424242',
+                "exp_month": 12,
+                "exp_year": 2017,
+                "cvc": '123'
+              },
+        )
 
-        self.assertEqual(bc.orders.count(), 1)
-        self.assertEqual(bc.total_pledged(), 10)
+        # create a charge
+        charge = stripe.Charge.create(
+          amount=2000,
+          currency="eur",
+          source=token.id,
+          description="Charge for joshua.jones@example.com"
+        )
 
+        # now we refund
+        refund = stripe.Refund.create(charge=charge.id)
 
-        # collect a recurrent donation 2
-        # collect a donation 1
-        order2 = Order(
-            amount=20,
-            notify=False,
-            campaign=bc,
-            recurrent=True,
-            )
-
-        order2.save()
-
-        self.assertEqual(bc.orders.count(), 2)
-        self.assertEqual(bc.total_pledged(), 30)
-
-        # the first period of the campaign ends, but the goal is not reached
-        self.assertEqual(bc.goal_reached(), False)
-        bc.close_campaign()
-
-        self.assertEqual(bc.status, CAMPAIGN_STATUS_FAILED)
-        next_campaign = bc.next_campaign
-
-        # donation 1 and 2 are now cancelled
-        order1.refresh_from_db()
-        order2.refresh_from_db()
-        self.assertEqual(order1.status, ORDER_STATUS_REIMBURSED)
-        self.assertEqual(order2.status, ORDER_STATUS_TRANSFERRED)
-
-        # but the payment of order2 is now transferred to the new campaign
-        self.assertEqual(next_campaign.orders.count(), 1)
-        self.assertEqual(next_campaign.total_pledged(), 20)
-
-        # add another donation, to reach the goal
-        order4 = Order(
-            amount=100,
-            notify=False,
-            campaign=next_campaign,
-            recurrent=True,
-            )
-
-        order4.save()
-
-        # now the goal is reached 
-        self.assertEqual(next_campaign.goal_reached(), True)
-        next_campaign.close_campaign()
-
-        # and the end period, the campaign funds are collected
-        # assert False, 'xxx'
+        # we expect success
+        self.assertEqual(refund.status, 'succeeded')

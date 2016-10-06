@@ -1,5 +1,10 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
+
+import stripe
+
 from reward import Reward
 
 ORDER_STATUS_REIMBURSED = 'REIMBU'
@@ -11,6 +16,9 @@ ORDER_STATUS = [
     (ORDER_STATUS_FINAL, 'FINALIZED'),
     (ORDER_STATUS_TRANSFERRED, 'Transferred to follow-up campaign'),
 ]
+
+
+stripe.api_key = settings.STRIPE_PRIVATE_KEY
 
 
 class Order(models.Model):
@@ -43,7 +51,46 @@ class Order(models.Model):
     recurrent = models.BooleanField(verbose_name="Make this a recurrent donation", default=False)
     status = models.CharField(max_length=10, choices=ORDER_STATUS, verbose_name='status')
 
+    charge_id = models.CharField(max_length=255, verbose_name="Stripe Charge id", null=True)
+
+    def pledge(self, card=None):
+        """pledge the amount (i.e. charge cc or pay bitcoin or whatever)
+
+        - the card argument (in case of cc payments) is a stripe Token 
+        """
+        charge = stripe.Charge.create(
+            amount=self.amount,
+            currency="eur",
+            source=card,
+            description="Pledge for CrowDAO, thank you!",
+        )
+
+        self.charge_id = charge.id
+        self.save()
+
     def reimburse(self):
-        # TODO: call stripe to reimburse 
-        self.status = ORDER_STATUS_REIMBURSED
+        #
+        # reimburse stripe payment
+        #
+        if not self.charge_id:
+            msg = 'Charge ID not found - cannot reimburse Stripe Payment'
+            raise Exception(msg)
+        idempotency_key = uuid.uuid4()
+        refund = stripe.Refund.create(idempotency_key=idempotency_key, charge=self.charge_id)
+        if refund.status == 'succeeded':
+            # we are happy
+            self.status = ORDER_STATUS_REIMBURSED
+            self.save()
+        else:
+            # try again, otherwise give up
+            refund = stripe.Refund.create(idempotency_key=idempotency_key, charge=self.charge_id)
+            if refund.status == 'succeeded':
+                # we are happy
+                self.status = ORDER_STATUS_REIMBURSED
+                self.save()
+            else:
+                raise Exception('Could not reimburse: {refund}'.format(refund=refund))
+
+    def finalize(self):
+        self.status = ORDER_STATUS_FINAL
         self.save()

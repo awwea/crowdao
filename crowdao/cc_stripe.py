@@ -1,5 +1,6 @@
 import datetime
 import decimal
+
 import stripe
 
 from django.core.mail import send_mail
@@ -79,14 +80,16 @@ def complete_payment(request):
             return render(request, 'error.html', locals())
 
         try:
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                card=token,
-                description=desc
-            )
+            # charge = stripe.Charge.create(
+            #     amount=amount,
+            #     currency="usd",
+            #     card=token,
+            #     description=desc
+            # )
+            o.pledge(card=token)
             # checkbox not checked --> the key is not sent in the request
             o.notify = request.session['fd'].has_key('notify')
+
             o.save()
             recipient_list = [request.session['fd']['email']]
             try:
