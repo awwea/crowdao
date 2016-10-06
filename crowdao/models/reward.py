@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from beacon import BeaconCampaign
 
 
 class Reward(models.Model):
