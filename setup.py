@@ -23,7 +23,7 @@ setup(
       'feincms',
       'requests',
       'pytz',
-      'django_comments',
+      # 'django_comments',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
