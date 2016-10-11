@@ -26,11 +26,11 @@ class Migration(migrations.Migration):
             name='duration',
             field=models.IntegerField(default='7', verbose_name='Duration of the campaign'),
         ),
-        migrations.AlterField(
-            model_name='campaign',
-            name='goal',
-            field=models.DecimalField(decimal_places=2, default=500, max_digits=8, verbose_name='Goal'),
-        ),
+        # # migrations.AlterField(
+        # #     model_name='campaign',
+        # #     name='goal',
+        # #     field=models.DecimalField(decimal_places=2, default=500, max_digits=8, verbose_name='Goal'),
+        # ),
         migrations.AlterField(
             model_name='campaign',
             name='name',
@@ -51,11 +51,11 @@ class Migration(migrations.Migration):
             name='addr2',
             field=models.CharField(blank=True, default='', max_length=255, verbose_name='Address 2'),
         ),
-        migrations.AlterField(
-            model_name='order',
-            name='amount',
-            field=models.DecimalField(decimal_places=2, default='', max_digits=8, verbose_name='Amount'),
-        ),
+        # migrations.AlterField(
+        #     model_name='order',
+        #     name='amount',
+        #     field=models.DecimalField(decimal_places=2, default='', max_digits=8, verbose_name='Amount'),
+        # ),
         migrations.AlterField(
             model_name='order',
             name='charge_id',
@@ -176,11 +176,11 @@ class Migration(migrations.Migration):
             name='img',
             field=models.URLField(blank=True, default='', verbose_name='Image URL'),
         ),
-        migrations.AlterField(
-            model_name='reward',
-            name='min_amount',
-            field=models.DecimalField(decimal_places=2, default='', max_digits=8, verbose_name='Minimum Amount'),
-        ),
+        # migrations.AlterField(
+        #     model_name='reward',
+        #     name='min_amount',
+        #     field=models.DecimalField(decimal_places=2, default='', max_digits=8, verbose_name='Minimum Amount'),
+        # ),
         migrations.AlterField(
             model_name='reward',
             name='name',
