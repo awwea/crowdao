@@ -11,7 +11,8 @@ import crowdao.paypal
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^$', crowdao.views.home, name='home'),
+    # url(r'^$', crowdao.views.home, name='home'),
+    url(r'^$', crowdao.views.HomePage.as_view(), name='page'),
     url(r'^questions/$', crowdao.views.questions, name='questions'),
     url(r'^updates/$', crowdao.views.updates, name='updates'),
     url(r'^c/choose$', crowdao.views.choose, name='choose'),
@@ -32,14 +33,18 @@ for x in settings.PAY_TYPES:
             url(r'^c/CC/complete$', crowdao.cc_stripe.complete_payment, name='complete_payment'),
         ]
     elif 'BC' in x[0]:
-        urlpatterns += [ 
+        urlpatterns += [
             url(r'^c/BC$', crowdao.bitcoin.approve_payment, name='approve_payment'),
             url(r'^c/BC/complete$', crowdao.bitcoin.complete_payment, name='complete_payment'),
         ]
     elif 'PP' in x[0]:
-        urlpatterns += [ 
+        urlpatterns += [
             url(r'^c/PP$', crowdao.paypal.approve_payment, name='approve_payment'),
             url(r'^c/PP/confirm$', crowdao.paypal.handle_response, name='handle_response'),
             url(r'^c/PP/complete$', crowdao.paypal.complete_payment, name='complete_payment'),
             url(r'^c/PP/cancel$', crowdao.paypal.cancel, name='cancel')
         ]
+
+urlpatterns += [
+    url(r'^(?P<path>.*)/$', crowdao.views.Page.as_view(), name='page'),
+]

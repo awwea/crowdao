@@ -3,6 +3,7 @@ from django.db import models
 from .campaign import Campaign
 from .order import Order
 from .reward import Reward
+from .page import Page
 
 
 class Update(models.Model):

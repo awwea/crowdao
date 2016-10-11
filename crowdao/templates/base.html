@@ -14,42 +14,82 @@
 </head>
 <body>
 	{% load currency %}
+	    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+		     <a class="navbar-brand" rel="home" href="/" title="CrowDAO">
+				The Beacon Project
+				<img src="{% static 'img/logo.png' %}" style="max-width:60px;">
+		    </a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+		      	<ul class="nav navbar-nav">
+			      	{% for page in pages_in_menu %}
+			      		<li><a href="/{{ page.slug }}">{{ page.title }}</a></li>
+			      	{% endfor %}
+		     	</ul>
+	
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
 	<div class="container">
-		<div class="masthead">
-		{% block masthead %}
-			<a href="{{ proj_url }}"><img src="{% static 'img/logo.png' %}" /></a>
-		{% endblock masthead %}	
-		</div>
+	{% block content %}
 		<div class="row fs-head">
-			<div class="col-md-6 videocol">
+			<div class="col-md-8 videocol">
 				{% block video %}
 				<iframe src="//player.vimeo.com/video/23136511?title=0&byline=0&portrait=0"  frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 				{% endblock video %}
+				<div class="row">
+				<div class="col-md-8">
+					{% block body %}{% endblock %}
+				</div>
+				</div>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-4 stats">
 				<h2 class="slimtop text-center"><strong>{{ slogan }}</strong></h2>
 				<div class="progress">
 					<div class="progress-bar" role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ pct }}%;">
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-md-3 text-center">
+				<div class="row hidden">
+					<div class="col-md-12">
 						<h1 class="slimtop">{{ pct_disp }}%</h1>
 						<p class="lead">{% trans "complete" %}</p>
 					</div>
-					<div class="col-md-3 text-center">
+				</div>
+				<div class="row">
+					<div class="col-md-12">
 						<h1 class="slimtop">{{ backers }}</h1>
 						<p class="lead">{% trans "backers" %}</p>
 					</div>
-					<div class="col-md-3 text-center">
+				</div>
+				<div class="row">
+					<div class="col-md-12">
 						<h1 class="slimtop">${{ total }}</h1>
 						<p class="lead">{% trans "pledged of" %} ${{ goal }}</p>
 					</div>
-					<div class="col-md-3 text-center">
+				</div>
+				<div class="row">
+					<div class="col-md-12">
 						<h1 class="slimtop">{% if days >= 0 %}{{ days }}{% else %}0{% endif %}</h1>
 						<p class="lead">{% if days == 1 %}{% trans "day" %}{% else %}{% trans "days" %}{% endif %} left</p>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<h1 class="slimtop">98.203</h1>
+						<p class="lead">Crow Gold mined</p>
+					</div>
+				</div>
+	
 				{% if nopay %}
 				<a class="btn btn-lg btn-primary btn-block disabled" href="/c/choose"><i class="icon-ok"></i>
 					{% trans "Campaign Ended" %}
@@ -60,59 +100,26 @@
 				{% endif %}
 			</div>
 		</div>
+	{% endblock content %}
 	</div>
-	<div class="container">
-		<div class="row">
+
+	<footer class="footer">
+		<div class="container">
+			<div class="row">
 			<div class="col-md-8">
-				<ul class="nav nav-tabs">
-					<li{% if activepage == 'home' %} class="active"{% endif %}><a href="/">{% trans "Home" %}</a></li>
-					{% for page in pages %}
-					<li{% if activepage == page.0 %} class="active"{% endif %}><a href="/p/{{ page.0 }}">{{ page.1 }}</a>
-					{% endfor %}
-					<li{% if activepage == 'updates' %} class="active"{% endif %}><a href="/updates">{% trans "Updates" %}{% if unum > 0 %} <span class="badge">{{ unum }}</span>{% endif %}</a></li>
-					<li{% if activepage == 'questions' %} class="active"{% endif %}><a href="/questions">{% trans "Your Questions" %}{% if qnum > 0 %} <span class="badge">{{ qnum }}</span>{% endif %}</a></li>
-				</ul>
-				{% block body %}{% endblock %}
-			</div>
-			<div class="col-md-4">
 				<div class="btn-group btn-group-lg btn-group-justified">
 					<a class="btn btn-lg btn-primary" rel="tooltip" data-toggle="tooltip" title="Share to Facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-facebook-sign text-center"></i></a>
 					<a class="btn btn-lg btn-info" rel="tooltip" data-toggle="tooltip" title="Tweet this page" href="https://twitter.com/home?status=Check%20this%20out!%20{{ proj_name|urlencode:'' }}%20-%20{{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-twitter text-center"></i></a>
 					<a class="btn btn-lg btn-danger" rel="tooltip" data-toggle="tooltip" title="Share to Google+" href="https://plus.google.com/share?url={{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-google-plus-sign text-center"></i></a>
 					<a class="btn btn-lg btn-default" rel="tooltip" data-toggle="tooltip" title="Share to Diaspora" href="http://sharetodiaspora.github.io/?title=Check%20this%20out!%20{{ proj_name|urlencode:'' }}&url={{ proj_addr|urlencode:'' }}" target="_blank"><i class="icon-asterisk text-center"></i></a>
 				</div>
-				<h1>Rewards</h1>
-				<p>You will receive Crow Gold when you donate to this campaign. 
-				Lorem ipsum ...
-
-				</p>
-				{% comment %}
-				<h1>{% trans "Reward Levels" %}</h1>
-				<p>{{ rewards_disclaimer }}</p>
-				<ul class="nav nav-pills nav-justified">
-					<li id="rewardamtbtnusd"><a href="#"><i class="icon-dollar"></i>USD</a></li>
-					<li id="rewardamtbtnbtc"><a href="#"><i class="icon-btc"></i>BTC</a></li>
-					<li id="rewardamtbtneur"><a href="#"><i class="icon-euro"></i>EUR</a></li>
-					<li id="rewardamtbtngbp"><a href="#"><i class="icon-gbp"></i>GBP</a></li>
-				</ul>
-				<small class="text-muted">
-					{% trans "Currency rates subject to change. Contributions are made in either USD or BTC." %}</small>
-				{% for r in rewards %}
-				<div class="reward">
-					<h3><i class="{{ r.icon_class }}"></i> {{ r.name }} <span class="text-muted"><span class="rewardamt rewardamtusd pull-right">${{ r.min_amount|stringformat:".0f" }}</span><span class="rewardamt rewardamtbtc pull-right"><i class="icon-btc"></i>{{ r.min_amount|dollars_to_btc }}</span><span class="rewardamt rewardamteur pull-right">€{{ r.min_amount|dollars_to_eur }}</span><span class="rewardamt rewardamtgbp pull-right">₤{{ r.min_amount|dollars_to_gbp }}</span></span></h3>
-					<p>{{ r.desc }}</p>
-					{% if r.img %}
-					<a href="{{ r.img }}" target="_blank"><img src="{{ r.img }}" class="img-responsive img-thumbnail" /></a>
-					{% endif %}
-					{% if r.fine_print %}
-					<small class="text-muted">{{ r.fine_print }}</small>
-					{% endif %}
-				</div>
-				{% endfor %}
-				{% endcomment %}
+			</div>
+			<div class="col-md-4">
+				<a href="{{ admin_link }}">(edit this page)</a>
+			</div>
 			</div>
 		</div>
-	</div>
+	</footer>
 	<script type="text/javascript">
 		$(function () {
 			$("[rel='tooltip']").tooltip({container: 'body'});
