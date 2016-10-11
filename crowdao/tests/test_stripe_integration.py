@@ -6,10 +6,11 @@ from .common import BaseTestCase
 from ..models.order import Order, ORDER_STATUS_FINAL, ORDER_STATUS_REIMBURSED, \
     ORDER_STATUS_TRANSFERRED
 from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign
-
+from .common import web_test
 
 class StripeIntegrationTests(BaseTestCase):
 
+    @web_test
     def test_refund(self):
         # 
         # create a creditcard token for testing purposes

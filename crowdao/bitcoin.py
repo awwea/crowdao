@@ -4,11 +4,11 @@ import decimal
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
-from django.template import Context
 from django.template.loader import get_template
 
 from crowdao.currency import get_btc_rate
 from crowdao.models import Order, Reward
+
 
 def approve_payment(request):
     proj_name = settings.PROJECT_NAME
@@ -65,7 +65,7 @@ def complete_payment(request):
         if request.session['fd']['email']:
             send_mail(
                 subject='Thank you for your contribution',
-                message=get_template('notify.txt').render(Context({'order': request.session['fd'], 'proj_name': proj_name, 'proj_addr': proj_addr, 'time': time, 'reward_desc': reward_desc})),
+                message=get_template('notify.txt').render({'order': request.session['fd'], 'proj_name': proj_name, 'proj_addr': proj_addr, 'time': time, 'reward_desc': reward_desc}),
                 from_email=settings.NOTIFY_SENDER, 
                 recipient_list=[request.session['fd']['email']],
                 fail_silently=False)

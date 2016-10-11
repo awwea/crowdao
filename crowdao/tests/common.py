@@ -1,12 +1,11 @@
-
-
 # encoding=utf-8
 #
 # copyright Gerbrandy SRL
 # www.gerbrandy.com
-# 2015-...
+# 2016-...
 #
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import trans_real
 from django_webtest import WebTest
@@ -77,3 +76,15 @@ class BaseTestCase(WebTest):
         self.assertEqual(response.context['page'].description, 'description_en2', msg='.. for slug {}'.format(slug))
         self.assertContains(response, 'description_en2')
         self.assertContains(response, 'content_en2')
+
+def web_test(f):
+    #
+    # run f only if settings.RUN_WEB_TESTS is True
+    #
+    if settings.RUN_WEB_TESTS:
+        return f
+    else:
+        def donothing(*args, **kwargs):
+            print('Not running this test {f.__qualname__} because settings.RUN_WEB_TESTS is False'.format(f=f))
+            return
+        return donothing
