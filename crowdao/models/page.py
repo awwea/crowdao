@@ -1,5 +1,5 @@
 from django.db import models
-
+from tinymce.models import HTMLField
 from ..utils import sluggify
 
 
@@ -9,7 +9,7 @@ class Page(models.Model):
 
     title = models.CharField(('Title'), max_length=255)
     subtitle = models.CharField(('Subtitle'), max_length=255, blank=True)
-    content = models.TextField(('Content'), blank=True)
+    content = HTMLField(('Content'), blank=True)
     image = models.FileField('Image or video', blank=True)
     slug = models.CharField(('Slug'), max_length=100, blank=True)  # defined the URL where this page can be found
 

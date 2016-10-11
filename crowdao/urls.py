@@ -18,7 +18,8 @@ urlpatterns = [
     url(r'^c/choose$', crowdao.views.choose, name='choose'),
     # url(r'^crowdao/', include('crowdao.foo.urls')),
     url(r'^captcha/', include('captcha.urls')),
-    url(r'^admin/', include(admin.site.urls))
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^tinymce/', include('tinymce.urls')),
 ]
 
 for x in os.listdir(os.path.join(settings.PROJECT_PATH, 'templates/pages')):
