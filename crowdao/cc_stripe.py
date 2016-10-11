@@ -105,7 +105,7 @@ def complete_payment(request):
                 mail_error_message = unicode(error)
             request.session['fd'] = {}
             return render(request, 'payment/success.html', locals())
-        except stripe.CardError, e:
+        except stripe.CardError as e:
             msg = "Your card has been declined. Please choose a new card or a new payment method and restart your order."
             return render(request, 'error.html', locals())
         except:

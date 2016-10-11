@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from common import BaseTestCase
+from .common import BaseTestCase
 
 
 class PageTestCase(BaseTestCase):
@@ -13,4 +13,3 @@ class PageTestCase(BaseTestCase):
 
     def test_admin(self):
         self.app.get('/', user='admin')
-

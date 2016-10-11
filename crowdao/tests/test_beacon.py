@@ -1,5 +1,7 @@
+from unittest import mock
+
 from django.core.urlresolvers import reverse
-from common import BaseTestCase
+from .common import BaseTestCase
 from ..models.order import Order, ORDER_STATUS_FINAL, ORDER_STATUS_REIMBURSED, \
     ORDER_STATUS_TRANSFERRED
 from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign
@@ -7,8 +9,14 @@ from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign
 
 class StripeIntegrationTests(BaseTestCase):
 
-    def test_beacon_campaign_lifecycle(self):
+    @mock.patch('stripe.Charge.create')
+    @mock.patch('stripe.Refund.create')
+    def test_beacon_campaign_lifecycle(self, mock_charge_create, mock_refund_create):
 
+        mock_charge_create.return_value.id = 'xxx'
+        mock_charge_create.return_value.status = 'succeeded'
+        mock_refund_create.return_value.id = 'xxx'
+        mock_refund_create.return_value.status = 'succeeded'
         # create a Beacon Campaign
         bc = Campaign(
             name='Test Campaign',

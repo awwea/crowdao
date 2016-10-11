@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
-from campaign import Campaign
-from order import Order
-from reward import Reward
+from .campaign import Campaign
+from .order import Order
+from .reward import Reward
 
 
 class Update(models.Model):

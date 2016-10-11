@@ -5,7 +5,7 @@ from django.db import models
 
 import stripe
 
-from reward import Reward
+from .reward import Reward
 
 ORDER_STATUS_REIMBURSED = 'REIMBU'
 ORDER_STATUS_FINAL = 'FINAL'
@@ -75,7 +75,7 @@ class Order(models.Model):
         if not self.charge_id:
             msg = 'Charge ID not found - cannot reimburse Stripe Payment'
             raise Exception(msg)
-        idempotency_key = uuid.uuid4()
+        idempotency_key = str(uuid.uuid4())
         refund = stripe.Refund.create(idempotency_key=idempotency_key, charge=self.charge_id)
         if refund.status == 'succeeded':
             # we are happy

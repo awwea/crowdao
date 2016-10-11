@@ -2,7 +2,7 @@ import stripe
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from common import BaseTestCase
+from .common import BaseTestCase
 from ..models.order import Order, ORDER_STATUS_FINAL, ORDER_STATUS_REIMBURSED, \
     ORDER_STATUS_TRANSFERRED
 from ..models.campaign import CAMPAIGN_STATUS_FAILED, Campaign

@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import json
-import urllib2
+from urllib.request import urlopen
 
 from django.conf import settings
 from django.utils import timezone
@@ -36,11 +36,11 @@ def gbp_to_dollars(value):
 def get_btc_rate():
     current_time = timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
     if not Value.objects.filter(type='BTC'):
-        Value.objects.create(type='BTC', value=json.loads(urllib2.urlopen('https://api.bitcoinaverage.com/ticker/USD').read())['24h_avg'], update=True)
+        Value.objects.create(type='BTC', value=json.loads(urlopen('https://api.bitcoinaverage.com/ticker/USD').read())['24h_avg'], update=True)
         return Value.objects.filter(type='BTC')[0].value
     elif ((current_time - Value.objects.filter(type='BTC')[0].created_at).days >= 1) and Value.objects.filter(type='BTC')[0].update:
         try:
-            data = json.loads(urllib2.urlopen('https://api.bitcoinaverage.com/ticker/USD').read())
+            data = json.loads(urlopen('https://api.bitcoinaverage.com/ticker/USD').read())
             v = Value.objects.filter(type='BTC')[0]
             v.value = data['24h_avg']
             v.created_at = current_time
@@ -61,7 +61,7 @@ def get_rate(src='', tgt=''):
                 Value.objects.create(type=src+'-'+tgt, value=data['rate'], update=True)
             else:
                 raise Exception('Currency API encountered an error: '+str(data))
-        except Exception, e:
+        except Exception as e:
             raise Exception('An error occurred with Currency API check: '+str(e))
         return Value.objects.filter(type=src+'-'+tgt)[0].value
     elif ((current_time - Value.objects.filter(type=src+'-'+tgt)[0].created_at).days >= 1) and Value.objects.filter(type=src+'-'+tgt)[0].update:

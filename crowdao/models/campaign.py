@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from copy import deepcopy
 
-from order import ORDER_STATUS_TRANSFERRED
+from .order import ORDER_STATUS_TRANSFERRED
 
 CAMPAIGN_TYPE_BEACON = 'BEACON'
 CAMPAIGN_TYPES = [
