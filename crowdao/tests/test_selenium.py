@@ -1,26 +1,26 @@
 #
 # TODO: mock all stripe requests - we are testing the UI here
-#
+#  - This seems the way: http://browsermob-proxy-py.readthedocs.io/en/latest/
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from .common import web_test
+from .common import web_test, selenium_test, mock_stripe
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
 
     @classmethod
-    @web_test
+    @selenium_test
     def setUpClass(cls):
         super(MySeleniumTests, cls).setUpClass()
         cls.selenium = WebDriver()
         cls.selenium.implicitly_wait(10)
 
     @classmethod
-    @web_test
+    @selenium_test
     def tearDownClass(cls):
         cls.selenium.quit()
         super(MySeleniumTests, cls).tearDownClass()
@@ -29,7 +29,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
         if settings.DEBUG is False:
             settings.DEBUG = True
 
-    @web_test
+    # @mock_stripe
+    @selenium_test
     def test_cc_payment(self):
         # we test the payment form with a stripe mockup
         sel = self.selenium
@@ -70,22 +71,26 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # TODO: we wait 10 seconds for an answer from stripe
         # would be better to do some conditional thing..
         from time import sleep
-        sleep(5)
+        sleep(3)
 
         # se should now be on the confirmation screen
+        if 'Confirm' not in sel.page_source:
+            import ipdb;ipdb.set_trace();
         self.assertIn('Confirm', sel.page_source)
 
         # we confirm
         sel.find_element_by_id('submitbutton').click()
 
         # the payment is made
+        if not 'Thank you' in sel.page_source:
+            import ipdb;ipdb.set_trace();
         self.assertIn('Thank you', sel.page_source)
         sel.find_element_by_id('backbutton').click()
 
         # and now we should be back on the home page
         print(sel.current_url)
 
-        print('OK, we now wait some secs for your convenience :-)')
-        from time import sleep
-        sleep(10)
+        # print('OK, we now wait some secs for your convenience :-)')
+        # from time import sleep
+        # sleep(10)
         # print response

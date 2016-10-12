@@ -77,9 +77,10 @@ class BaseTestCase(WebTest):
         self.assertContains(response, 'description_en2')
         self.assertContains(response, 'content_en2')
 
+
 def web_test(f):
     #
-    # run f only if settings.RUN_WEB_TESTS is True
+    # decorator function: run f only if settings.RUN_WEB_TESTS is True
     #
     if settings.RUN_WEB_TESTS:
         return f
@@ -88,3 +89,30 @@ def web_test(f):
             print('Not running this test {f.__qualname__} because settings.RUN_WEB_TESTS is False'.format(f=f))
             return
         return donothing
+
+
+def selenium_test(f):
+    #
+    # decorator function: run f only if settings.RUN_WEB_TESTS is True
+    #
+    if settings.RUN_SELENIUM_TESTS:
+        return f
+    else:
+        def donothing(*args, **kwargs):
+            print('Not running this test {f.__qualname__} because settings.RUN_SELENIUM_TESTS is False'.format(f=f))
+            return
+        return donothing
+
+from unittest import mock
+def mock_stripe(f):
+    @mock.patch('stripe.Charge.create')
+    @mock.patch('stripe.Refund.create')
+    def new_f(s, mock_charge_create, mock_refund_create):
+
+        mock_charge_create.return_value.id = 'xxx'
+        mock_charge_create.return_value.status = 'succeeded'
+        mock_refund_create.return_value.id = 'xxx'
+        mock_refund_create.return_value.status = 'succeeded'
+        return f(s)
+
+    return new_f

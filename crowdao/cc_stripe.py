@@ -85,10 +85,9 @@ def complete_payment(request):
             #     card=token,
             #     description=desc
             # )
-            o.pledge(card=token)
             # checkbox not checked --> the key is not sent in the request
-            o.notify = request.session['fd'].has_key('notify')
-
+            o.notify = 'notify' in request.session['fd'] and True or False
+            o.pledge(card=token)
             o.save()
             recipient_list = [request.session['fd']['email']]
             try:
