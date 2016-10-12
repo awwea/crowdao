@@ -43,7 +43,7 @@ class Order(models.Model):
     ptype = models.CharField(max_length=2, choices=PAY_TYPES, verbose_name='Payment Type')
     pref = models.CharField(max_length=255, default="", verbose_name='Payment Reference', blank=True)
     email = models.EmailField(verbose_name='Email')
-    notify = models.BooleanField(verbose_name="Notify me if the project team posts an update?", null=True)
+    notify = models.BooleanField(verbose_name="Notify me if the project team posts an update?")
     namecredit = models.CharField(max_length=255, default="", verbose_name='Credit Name', blank=True)
     notes = models.CharField(max_length=255, default="", verbose_name='Notes', blank=True,)
 

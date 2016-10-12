@@ -53,7 +53,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         # send 100 cents
         sel.find_element_by_id('amount').send_keys('100')
         # select reward level 
-        sel.find_element_by_id('rsel0').click()
+        # sel.find_element_by_id('rsel0').click()
 
         # add credit card info
         for (input_id, value) in [
@@ -75,7 +75,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # se should now be on the confirmation screen
         if 'Confirm' not in sel.page_source:
-            import ipdb;ipdb.set_trace();
+            print('Check out the error in the browser...')
+            sleep(100)
         self.assertIn('Confirm', sel.page_source)
 
         # we confirm
@@ -83,14 +84,10 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         # the payment is made
         if not 'Thank you' in sel.page_source:
-            import ipdb;ipdb.set_trace();
+            print('Check out the error in the browser...')
+            sleep(100)
         self.assertIn('Thank you', sel.page_source)
         sel.find_element_by_id('backbutton').click()
 
         # and now we should be back on the home page
         print(sel.current_url)
-
-        # print('OK, we now wait some secs for your convenience :-)')
-        # from time import sleep
-        # sleep(10)
-        # print response

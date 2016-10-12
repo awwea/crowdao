@@ -18,13 +18,13 @@ def approve_payment(request):
 
     if request.method == 'POST':
         fd = request.POST.copy()
-        if fd['reward'] != 'none':
-            fd['reward_name'] = fd['reward']
-            fd['reward_short_desc'] = Reward.objects.get(name=fd['reward']).short_desc
-            fd['reward'] = True
-        else:
-            fd['reward'] = False
-            fd['reward_name'] = ''
+        # if fd['reward'] != 'none':
+        #     fd['reward_name'] = fd['reward']
+        #     fd['reward_short_desc'] = Reward.objects.get(name=fd['reward']).short_desc
+        #     fd['reward'] = True
+        # else:
+        #     fd['reward'] = False
+        #     fd['reward_name'] = ''
         if fd['ctype'] == 'eur':
             fd['amount_eur'] = fd['amount']
             fd['amount'] = eur_to_dollars(fd['amount'])
@@ -38,7 +38,7 @@ def approve_payment(request):
         return render(request, 'error.html', locals())
     else:
         request.session['fd'] = {}
-        rewards = sorted(Reward.objects.all(), key=lambda i: i.min_amount)
+        # rewards = sorted(Reward.objects.all(), key=lambda i: i.min_amount)
         return render(request, 'payment/cc.html', locals())
 
 
@@ -48,7 +48,7 @@ def complete_payment(request):
         proj_name = settings.PROJECT_NAME
         proj_addr = settings.PROJECT_ADDR
         time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-        reward_desc = (Reward.objects.get(name=request.session['fd']['reward_name']).desc if request.session['fd']['reward'] else 'None')
+        # reward_desc = (Reward.objects.get(name=request.session['fd']['reward_name']).desc if request.session['fd']['reward'] else 'None')
 
         # amount in cents
         amount = int(request.session['fd']['amount']) * 100
@@ -57,14 +57,14 @@ def complete_payment(request):
 
         try:
             o = Order(
-                name=(request.session['fd']['sh_name'] if request.session['fd']['sh_name'] else request.session['fd']['cc_name']),
-                addr1=request.session['fd']['sh_addr1'],
-                addr2=request.session['fd']['sh_addr2'],
-                city=request.session['fd']['sh_city'],
-                state=request.session['fd']['sh_state'],
-                pcode=request.session['fd']['sh_post'],
-                country=request.session['fd']['sh_country'],
-                reward=(Reward.objects.get(name=request.session['fd']['reward_name']) if request.session['fd']['reward'] else None),
+                name=(request.session['fd']['sh_name'] if request.session['fd'].get('sh_name') else request.session['fd']['cc_name']),
+                # addr1=request.session['fd']['sh_addr1'],
+                # addr2=request.session['fd']['sh_addr2'],
+                # city=request.session['fd']['sh_city'],
+                # state=request.session['fd']['sh_state'],
+                # pcode=request.session['fd']['sh_post'],
+                # country=request.session['fd']['sh_country'],
+                # reward=(Reward.objects.get(name=request.session['fd']['reward_name']) if request.session['fd']['reward'] else None),
                 amount=decimal.Decimal(request.session['fd']['amount']),
                 ptype='CC',
                 pref=request.session['fd']['cc_type'] + ' x-' + request.session['fd']['cc_last4'],
@@ -93,14 +93,20 @@ def complete_payment(request):
             try:
                 send_mail(
                     subject=proj_name + ' - Thank you for your contribution',
-                    message=get_template('notify.txt').render({'order': request.session['fd'], 'proj_name': proj_name, 'proj_addr': proj_addr, 'time': time, 'reward_desc': reward_desc}),
+                    message=get_template('notify.txt').render({
+                        'order': request.session['fd'],
+                        'proj_name': proj_name,
+                        'proj_addr': proj_addr,
+                        'time': time,
+                        # 'reward_desc': reward_desc,
+                        }),
                     from_email=settings.NOTIFY_SENDER,
                     recipient_list=recipient_list,
                     fail_silently=False)
                 mail_sent = True
             except Exception as error:
                 mail_sent = False
-                mail_error_message = unicode(error)
+                mail_error_message = str(error)
             request.session['fd'] = {}
             return render(request, 'payment/success.html', locals())
         except stripe.CardError as e:

@@ -124,7 +124,7 @@ jQuery(function($){
 			$('#rewards-grp').toggleClass('text-danger', !($('[id^=rsel]').is(':checked')));
 		} else {
 			var cardType = $.payment.cardType($('#cc-number').val());
-			$('#rewards-grp').toggleClass('text-danger', !($('[id^=rsel]').is(':checked')));
+			// $('#rewards-grp').toggleClass('text-danger', !($('[id^=rsel]').is(':checked')));
 			$('#cc-name-grp').toggleClass('has-error', !($('#cc-name').val()));
 			$('#cc-email-grp').toggleClass('has-error', !($('#email').val()) || !emailReg.test($('#email').val()));
 			$('#cc-num-grp').toggleClass('has-error', !$.payment.validateCardNumber($('#cc-number').val()));
@@ -134,19 +134,19 @@ jQuery(function($){
 
 		// Validate shipping info if reward is claimed, and check if the
 		//    price entered is high enough for the selected reward
-		if (!($('[id^=rsel][id$=0]').is(':checked'))) {
-			$('#sh-name-grp').toggleClass('has-error', !($('#sh-name').val()));
-			$('#sh-addr1-grp').toggleClass('has-error', !($('#sh-addr1').val()));
-			$('#sh-city-grp').toggleClass('has-error', !($('#sh-city').val()));
-			$('#sh-state-grp').toggleClass('has-error', !($('#sh-state').val()));
-			$('#sh-post-grp').toggleClass('has-error', !($('#sh-post').val()));
-			$('#sh-country-grp').toggleClass('has-error', !($('#sh-country').val()));
-			if (paymentType == 'bc' && parseFloat($('#amount').val()) < parseFloat($('input[id^="rsel"]:checked').closest('tr').children('.price').text().split(' ')[1])) {
-				$('#rewards-grp').toggleClass('text-danger', !($('#rewards-grp').hasClass('text-danger')));
-			} else if (paymentType != 'bc' && parseInt($('#amount').val()) < parseInt($('input[id^="rsel"]:checked').closest('tr').find('.rewardamt'+currencyType).text().split(' ')[1])) {
-				$('#rewards-grp').toggleClass('text-danger', !($('#rewards-grp').hasClass('text-danger')));
-			};
-		};
+		// if (!($('[id^=rsel][id$=0]').is(':checked'))) {
+		// 	$('#sh-name-grp').toggleClass('has-error', !($('#sh-name').val()));
+		// 	$('#sh-addr1-grp').toggleClass('has-error', !($('#sh-addr1').val()));
+		// 	$('#sh-city-grp').toggleClass('has-error', !($('#sh-city').val()));
+		// 	$('#sh-state-grp').toggleClass('has-error', !($('#sh-state').val()));
+		// 	$('#sh-post-grp').toggleClass('has-error', !($('#sh-post').val()));
+		// 	$('#sh-country-grp').toggleClass('has-error', !($('#sh-country').val()));
+		// 	if (paymentType == 'bc' && parseFloat($('#amount').val()) < parseFloat($('input[id^="rsel"]:checked').closest('tr').children('.price').text().split(' ')[1])) {
+		// 		$('#rewards-grp').toggleClass('text-danger', !($('#rewards-grp').hasClass('text-danger')));
+		// 	} else if (paymentType != 'bc' && parseInt($('#amount').val()) < parseInt($('input[id^="rsel"]:checked').closest('tr').find('.rewardamt'+currencyType).text().split(' ')[1])) {
+		// 		$('#rewards-grp').toggleClass('text-danger', !($('#rewards-grp').hasClass('text-danger')));
+		// 	};
+		// };
 
 		// If validation fails anywhere, show an error, else create token and proceed
 		if ($('input').parent('.has-error').length || $('#rewards-grp').hasClass('text-danger').length) {

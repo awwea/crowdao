@@ -4,10 +4,19 @@
 {% load currency %}
   <form id="payform" role="form" method="POST" action="/c/CC" novalidate>
     <img src="{% static 'img/logo.png' %}" width="200" height="auto" /><br />
+  <div class="alert alert-info">
+  Todo: 
+  <ul>
+      <li>perhaps separete the form over several screens
+      <li>validate BTC address
+      <li>create account step is not working yet
+  </ul>
+  </div>
     <div class="alert alert-danger" id="validate">
       There was an error in processing this information. Please verify that the fields in red below are correct.
     </div>
 
+    {% comment %}
     <h4 class="phead">Step 1 - Choose your currency:</h4>
     <div id="ctypechoose" class="row text-center">
       <div class="col-md-4 ctypes">
@@ -21,13 +30,14 @@
       </div>
       <p class="text-muted">This is for comparison purposes only - the transaction will occur in US dollars.</p>
     </div>
+    {% endcomment %}
 
-    <h4 class="phead">Step 2 - Set your donation amount: </h4>
+    <h4 class="phead">Step 1 - Set your donation amount: </h4>
     <div id="donate-grp" class="form-group input-group input-group-lg">
       <span class="input-group-addon"><i id="currency-icon" class="icon-usd"></i></span>
       <input type="text" class="form-control" name="amount" id="amount" placeholder="USD" />
     </div>
-
+    {% comment %}
     <h4 class="phead">Step 3 - Choose your reward level:</h4>
     <p>For more information about rewards, <a href="/">go back</a></p>
     <div id="rewards-grp" class="form-group">
@@ -40,8 +50,9 @@
         </tbody>
       </table>
     </div>
+    {% endcomment %}
 
-    <h4 class="phead">Step 3 - Fill in your payment information</h4>
+    <h4 class="phead">Step 2 - Fill in your payment information</h4>
 
     <div id="cc-form">
       <div id="cc-name-grp" class="form-group">
@@ -70,6 +81,18 @@
       </div>
     </div>
 
+    <h4 class="phead">Step 3 - Fill in your Counterparty Address to receive your CrowGold</h4>
+    <p>With your donation you are not only contributing to the project - you will also receive a gift of Crow Gold.</p>
+    <p> To receive your crowgold, you need an Bitcoin adress and a Counterparty Wallet. If you do not have these, or do not know what this means, you can create a wallet with <a href="https://wallet.counterwallet.io">counterwallet</a></p>
+    <p>Alternatively, you can skip this step for now. If you do, we ask you to to create an account below, so you can set the address at a later date</p>
+    <div id="counterparty-form">
+      <div id="counterparty-address" class="form-group">
+        <label class="control-label" for="counterparty-address">Counterparty Address</label>
+        <input type="text" id="counterparty-address" name="counterparty-address" class="form-control" />
+      </div>
+    </div>
+
+    {% comment %}
     <div id="sh-form">
       <h4 class="phead">Step 5 - Fill in your shipping details</h4>
 
@@ -108,11 +131,28 @@
         <input type="text" class="form-control" id="sh-country" name="sh_country" x-autocompletetype="country-name" />
       </div>
     </div>
+    {% endcomment %}
 
-    <div class="checkbox">
-      <label>
-        <input name="notify" type="checkbox"> Notify me by email if the project posts updates
-      </label>
+    <h4 class="phead">Step 4 - Create an account on CrowDao</h4>
+    <div id="account-form">
+      <div id="account-email" class="form-group">
+        <label class="control-label" for="account-email">Email</label>
+        <input type="text" id="account-email" name="account_email" class="form-control" />
+      </div>
+      <div id="account-password" class="form-group">
+        <label class="control-label" for="account-password">Choose a password</label>
+        <input type="password" id="account-password" name="account_password" class="form-control" />
+      </div> 
+      <div id="account-password2" class="form-group">
+        <label class="control-label" for="account-password2">Repeat the password</label>
+        <input type="password" id="account-password2" name="account_password2" class="form-control" />
+      </div>
+      <div class="checkbox">
+        <label>
+          <input name="notify" type="checkbox"> Notify me by email if the project posts updates
+        </label>
+      </div>
+      <p>You will be asked to confirm this email address.</p>
     </div>
 
     <p class="phead">Click below to verify the information and submit your order. You will have the opportunity to confirm your order before any charge is made. Payments are securely processed by <a href="https://www.stripe.com">Stripe</a>.</p>
